@@ -1,26 +1,38 @@
 import React from 'react';
-import logo from './logo.svg';
+import { Provider } from "react-redux";
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
+import store from "./store";
+import Navbar from './components/Navbar';
+import BooksTablePage from './pages/BooksTablePage';
+import BookPage from './pages/BookPage';
+import LoginPage from './pages/LoginPage';
+import AuthGuard from './components/AuthGuard';
+import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+export default function App() {
+    return (
+        <Provider store={store}>
+            <Router>
+                <Navbar />
+                <Switch>
+                    <Route path="/" component={BooksTablePage} exact />
+                    <Route path="/book/create">
+                        <AuthGuard>
+                            <BookPage mode="create" />
+                        </AuthGuard>
+                    </Route>
+                    <Route path="/book/edit/:id">
+                        <AuthGuard>
+                            <BookPage mode="edit" />
+                        </AuthGuard>
+                    </Route>
+                    <Route path="/login" component={LoginPage} />
 
-export default App;
+                    {/* Для простоты вместо NotFoundPage будем просто редиректить на главную страницу. */}
+                    <Redirect to="/" />
+                </Switch>
+            </Router>
+        </Provider>
+    );
+}
